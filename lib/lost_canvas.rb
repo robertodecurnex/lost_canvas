@@ -1,0 +1,2 @@
+class LostCanvas
+end
