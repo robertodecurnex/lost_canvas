@@ -1,4 +1,4 @@
-class LostCanvas
+module LostCanvas
 
   VERSION = '0.0.1'
 
