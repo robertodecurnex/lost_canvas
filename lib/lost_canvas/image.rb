@@ -3,21 +3,33 @@ module LostCanvas
   # LostCanvas Image representation.
   class Image
 
+    def initialize pixels, encoding
+      @encoding = encoding
+      @pixels = pixels
+    end
+ 
     # Open and decode the given file. 
     #
     # @param [String] file_path path to the target image file.
     # @return [LostCanvas::Image] abstract image representation.
     def self.open file_path
-      File.open(file_path)
-
-      self.new
+      if IO.binread(file_path, 8) == LostCanvas::PNG::SIGNATURE 
+        LostCanvas::PNG.decode(File.open(file_path, 'rb'))
+      end
     end
 
+    # Returns the image encoding configuration.
+    #
+    # @return [OpenStruct] image encoding information.
+    def encoding
+      @encoding ||= OpenStruct.new
+    end
+   
     # Returns the image heigth in pixels.
     #
     # @return [Fixnum] image height in pixels.
     def heigth
-      1
+      @pixels.rows_count
     end
 
     # Encode and save the image.
@@ -31,7 +43,7 @@ module LostCanvas
     #
     # @return [Fixnum] image width in pixels.
     def width
-      1
+      @pixel.column_count
     end
 
   end

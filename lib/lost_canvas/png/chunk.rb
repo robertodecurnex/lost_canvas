@@ -6,13 +6,6 @@ module LostCanvas
 
       attr_accessor :size, :data, :type, :crc
 
-      def initialize(type,data = "")
-        @type = type
-        @size = data.length
-        @data = data             
-        @crc  = create_crc
-      end
-
       def to_bytes
         [@size].pack("N1") + @type + @data + @crc
       end

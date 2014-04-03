@@ -2,14 +2,36 @@ require_relative '../../spec_helper'
 
 describe LostCanvas::Image do
  
-  before :each do
-    @image = LostCanvas::Image.open('./spec/files/1x1_black.png')
+  let :image1x1 do
+    LostCanvas::Image.open('./spec/files/1x1_black.png')
+  end
+  
+  let :image2x2 do
+    LostCanvas::Image.open('./spec/files/2x2_black.png')
   end
  
-  describe '#open' do
+  describe '::open' do
 
     it 'should return a LostCanvas::Image instance' do
-      @image.class.should be LostCanvas::Image
+      image1x1.class.should be LostCanvas::Image
+    end
+
+  end
+
+  describe '#encoding.format' do
+    
+    it 'should return png' do
+      image1x1.encoding.format.should == 'png'
+      image2x2.encoding.format.should == 'png'
+    end
+
+  end
+
+  describe '#height' do
+
+    it 'should return the image height' do
+      image1x1.heigth.should == 1
+      image2x2.heigth.should == 2
     end
 
   end
@@ -17,25 +39,20 @@ describe LostCanvas::Image do
   describe '#save' do
 
     it 'should return true' do
-      @image.save.should == true
-    end
-
-  end
-
-  describe '#heigth' do
-
-    it 'should return 1' do
-      @image.heigth.should == 1
+      image1x1.save.should == true
     end
 
   end
 
   describe '#width' do
     
-    it 'should retunrn 1' do
-      @image.width.should == 1
+    it 'should retunrn the image width' do
+      image1x1.width.should == 1
+      image2x2.width.should == 2
     end
 
   end
+
+ 
 
 end
