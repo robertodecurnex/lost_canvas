@@ -24,15 +24,33 @@ module LostCanvas
            chunks[chunk.type] = chunk
          end
       end
+      
+      height, width, bit_depth, color_type, compression_method, filter_method, interlace_method = chunks['IHDR'].data.unpack('N2C4')
 
-      data = chunks['IDAT'].collect { |chunk| Zlib::Inflate.inflate(chunk.data).bytes[1..-1] }.flatten
+      encoding = OpenStruct.new({
+        bit_depth: bit_depth,
+        color_type: color_type,
+        compression_method: compression_method,
+        filter_method: filter_method,
+        format: 'png',
+        height: height,
+        interlace_method: interlace_method,
+        width: width
+      })
 
-      height, width = chunks['IHDR'].data.unpack('N2C4')
+      data = chunks['IDAT'].collect do |chunk| 
+        Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+4*encoding.width).collect do |scanline|
+          filter_type, *data = scanline
 
-      encoding = OpenStruct.new(format: 'png')
+          LostCanvas::PNG::reverse_filter(filter_type, data)
+        end
+      end.flatten
 
-      pixels = Matrix[*data.each_slice(4).to_a.each_slice(width).to_a]
 
+      data_filters = chunks['IDAT'].collect { |chunk| Zlib::Inflate.inflate(chunk.data).bytes.first }
+      
+      pixels = Matrix[*data.each_slice(4).to_a.each_slice(encoding.width).to_a]
+ 
       LostCanvas::Image.new(pixels, encoding)
     end
 
@@ -47,6 +65,22 @@ module LostCanvas
       raise 'Invalid CRC' if [Zlib.crc32(chunk.type + chunk.data)].pack('N') != chunk.crc
      
       return chunk
+    end
+    
+    def self.filter(type, data)
+      return data if type == 0
+
+      data.inject([]) do |memo, byte|
+        memo << byte - (memo[-4] || 0)
+      end
+    end
+
+    def self.reverse_filter(type, data)
+      return data if type == 0
+
+      data.inject([]) do |memo, byte|
+        memo << byte + (memo[-4] || 0)
+      end
     end
 
   end

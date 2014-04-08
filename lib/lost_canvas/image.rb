@@ -29,7 +29,7 @@ module LostCanvas
     #
     # @return [Fixnum] image height in pixels.
     def heigth
-      @pixels.rows_count
+      @pixels.row_count
     end
 
     # Encode and save the image.
@@ -43,7 +43,7 @@ module LostCanvas
     #
     # @return [Fixnum] image width in pixels.
     def width
-      @pixel.column_count
+      @pixels.column_count
     end
 
   end
