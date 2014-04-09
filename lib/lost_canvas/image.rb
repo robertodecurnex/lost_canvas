@@ -29,9 +29,16 @@ module LostCanvas
     #
     # @return [Fixnum] image height in pixels.
     def heigth
-      @pixels.row_count
+      self.pixels.row_count
     end
 
+    # Returns the image pixels as a Matrix (an empty Matrix for non initialized images).
+    #
+    # @return [Matrix] image pixels as a Matrix.
+    def pixels
+      @pixels ||= Matrix[]
+    end
+ 
     # Encode and save the image.
     #
     # @return [TrueClass] whether the image was successfully saved or not. 
@@ -43,7 +50,7 @@ module LostCanvas
     #
     # @return [Fixnum] image width in pixels.
     def width
-      @pixels.column_count
+      self.pixels.column_count
     end
 
   end

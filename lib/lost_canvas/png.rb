@@ -24,8 +24,8 @@ module LostCanvas
            chunks[chunk.type] = chunk
          end
       end
-      
-      height, width, bit_depth, color_type, compression_method, filter_method, interlace_method = chunks['IHDR'].data.unpack('N2C4')
+     
+      height, width, bit_depth, color_type, compression_method, filter_method, interlace_method = chunks['IHDR'].data.unpack('N2C5')
 
       encoding = OpenStruct.new({
         bit_depth: bit_depth,
