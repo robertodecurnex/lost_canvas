@@ -9,6 +9,16 @@ module LostCanvas
     # @return [String] encoded PNG signature.
     SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8')
 
+    module Filters
+       
+      NONE = 0
+      SUB = 1
+      UP = 2
+      AVERAGE = 3
+      PAETH = 4
+
+    end
+
     def self.decode stream
       raise 'Invalid PNG signature' if stream.read(8) != LostCanvas::PNG::SIGNATURE
 
@@ -78,15 +88,28 @@ module LostCanvas
     def self.reverse_filter(type, data, previous=nil)
       return data if type == 0
       case type
-      when 0 then
+      when Filters::NONE then
         data
-      when 1 then
+      when Fitlers::SUB then
         data.inject([]) do |memo, byte|
           memo << byte + (memo[-4] || 0)
         end
-      when 2 then
+      when Filters::UP then
         data.inject([]) do |memo, byte|
-          memo << byte + previous[memo.length]
+          memo << byte + (previous[memo.length] || 0)
+        end
+      when Filters::AVERAGE then
+        data.inject([]) do |memo, byte|
+          memo << byte + (((memo[-4] || 0) + (previous[memo.length] || 0) / 2)
+        end
+      when Filters::PAETH then
+        data.inject([]) do |memo, byte|
+          a = (memo[-4] || 0)  
+          b = (previous[memo.length] || 0) 
+          c = (previous[memo.length-4] || 0)
+          p = a + b - c
+
+          memo << byte + [a,b,c].sort {|x,y| (p-x).abs <=> (p-y).abs}.first
         end
       else
         raise "Filter #{type} not supported"

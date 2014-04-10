@@ -7,7 +7,7 @@ describe LostCanvas::Image do
   end
   
   let :image2x2 do
-    LostCanvas::Image.open('./spec/files/2x2_black_sub_filter.png')
+    LostCanvas::Image.open('./spec/files/2x2_black_sub_up_filter.png')
   end
  
   describe '::open' do
