@@ -39,10 +39,10 @@ module LostCanvas
       })
 
       data = chunks['IDAT'].collect do |chunk| 
-        Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+4*encoding.width).collect do |scanline|
+        Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+4*encoding.width).inject([]) do |memo, scanline|
           filter_type, *data = scanline
 
-          LostCanvas::PNG::reverse_filter(filter_type, data)
+          memo << LostCanvas::PNG::reverse_filter(filter_type, data, memo.last)
         end
       end.flatten
 
@@ -75,11 +75,21 @@ module LostCanvas
       end
     end
 
-    def self.reverse_filter(type, data)
+    def self.reverse_filter(type, data, previous=nil)
       return data if type == 0
-
-      data.inject([]) do |memo, byte|
-        memo << byte + (memo[-4] || 0)
+      case type
+      when 0 then
+        data
+      when 1 then
+        data.inject([]) do |memo, byte|
+          memo << byte + (memo[-4] || 0)
+        end
+      when 2 then
+        data.inject([]) do |memo, byte|
+          memo << byte + previous[memo.length]
+        end
+      else
+        raise "Filter #{type} not supported"
       end
     end
 
