@@ -9,7 +9,10 @@ module LostCanvas
   class PNG
 
     class Filter
-
+      
+      # Hash of Filter classes by type.
+      #
+      # @return [{Fixnum=>Class}] collection of type => class filters.
       FILTERS = {
         0 => LostCanvas::PNG::Filter::None,
         1 => LostCanvas::PNG::Filter::Sub,
@@ -18,6 +21,10 @@ module LostCanvas
         4 => LostCanvas::PNG::Filter::Paeth
       }
 
+      # Returns the Filter Class based on its type.
+      #
+      # @param [Fixnum] type the target Filter type.
+      # @return [Class] the Filter class for the given type.
       def self.get(type)
         LostCanvas::PNG::Filter::FILTERS[type]
       end
