@@ -1,4 +1,5 @@
-require_relative 'png/chunk.rb'
+require_relative 'png/chunk'
+require_relative 'png/filter'
 
 module LostCanvas
 
@@ -52,7 +53,7 @@ module LostCanvas
         Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+4*encoding.width).inject([]) do |memo, scanline|
           filter_type, *data = scanline
 
-          memo << LostCanvas::PNG::reverse_filter(filter_type, data, memo.last)
+          memo << LostCanvas::PNG::revert_filter(filter_type, data, memo.last)
         end
       end.flatten
 
@@ -77,43 +78,12 @@ module LostCanvas
       return chunk
     end
     
-    def self.filter(type, data)
-      return data if type == 0
-
-      data.inject([]) do |memo, byte|
-        memo << byte - (memo[-4] || 0)
-      end
+    def self.filter(type, data, previous=[])
+      LostCanvas::PNG::Filter.get(type).apply(data, previous)
     end
 
-    def self.reverse_filter(type, data, previous=nil)
-      return data if type == 0
-      case type
-      when Filters::NONE then
-        data
-      when Fitlers::SUB then
-        data.inject([]) do |memo, byte|
-          memo << byte + (memo[-4] || 0)
-        end
-      when Filters::UP then
-        data.inject([]) do |memo, byte|
-          memo << byte + (previous[memo.length] || 0)
-        end
-      when Filters::AVERAGE then
-        data.inject([]) do |memo, byte|
-          memo << byte + (((memo[-4] || 0) + (previous[memo.length] || 0) / 2)
-        end
-      when Filters::PAETH then
-        data.inject([]) do |memo, byte|
-          a = (memo[-4] || 0)  
-          b = (previous[memo.length] || 0) 
-          c = (previous[memo.length-4] || 0)
-          p = a + b - c
-
-          memo << byte + [a,b,c].sort {|x,y| (p-x).abs <=> (p-y).abs}.first
-        end
-      else
-        raise "Filter #{type} not supported"
-      end
+    def self.revert_filter(type, data, previous=[])
+      LostCanvas::PNG::Filter.get(type).revert(data, previous)
     end
 
   end
