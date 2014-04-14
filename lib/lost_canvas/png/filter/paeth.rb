@@ -19,9 +19,8 @@ module LostCanvas
             a = memo.length>=self.pixel_size ? data[memo.length-self.pixel_size]:0
             b = previous[memo.length]||0
             c = memo.length>=self.pixel_size ? previous[memo.length-self.pixel_size]||0:0
-            p = a + b - c
 
-            memo << byte - [a,b,c].sort{|x,y| (p-x).abs <=> (p-y).abs}.first
+            memo << byte - closer_to_paeth(a,b,c)
           end
         end
         
@@ -35,10 +34,23 @@ module LostCanvas
             a = memo[-self.pixel_size].to_i
             b = previous[memo.length]||0
             c = memo.length>=self.pixel_size ? previous[memo.length-self.pixel_size]||0:0
-            p = a + b - c
 
-            memo << byte + [a,b,c].sort{|x,y| (p-x).abs <=> (p-y).abs}.first
+            memo << byte + closer_to_paeth(a,b,c)
           end
+        end
+
+      private
+
+        # Returns the closest element fom the Peath number of the trio.
+        #
+        # @param [Fixnum] a 1st number.
+        # @param [Fixnum] b 2nd number.
+        # @param [Fixnum] c 3rd number.
+        # @return [Fixnum] closest number to the Peath number.
+        def closer_to_paeth(a, b, c)
+          p = a + b - c
+   
+          [a,b,c].sort{|x,y| (p-x).abs <=> (p-y).abs}.first
         end
 
       end
