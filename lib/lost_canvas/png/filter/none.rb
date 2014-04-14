@@ -5,14 +5,14 @@ module LostCanvas
     class Filter
     
       # Scanline filter algorithms that returns the scanline untouched.
-      class None
+      class None < LostCanvas::PNG::Filter
 
         # Returns the scanline untouched.
         #
         # @param [<Fixnum>] data the target scanline.
         # @param [<Object>] void ignored params.
         # @return [<Fixnum>] the scanline untouched.
-        def self.apply(data,*void)
+        def apply(data,*void)
           data
         end
 
@@ -21,7 +21,7 @@ module LostCanvas
         # @param [<Fixnum>] data the target scanline.
         # @param [<Object>] void ignored params.
         # @return [<Fixnum>] the scanline untouched.
-        def self.revert(data, *void)
+        def revert(data, *void)
           data
         end
   

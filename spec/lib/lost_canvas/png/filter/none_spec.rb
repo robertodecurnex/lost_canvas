@@ -8,7 +8,7 @@ describe LostCanvas::PNG::Filter::None do
 
       it 'should return the scanline untouched' do
       
-         LostCanvas::PNG::Filter::None.apply([1,2,3,4,5,6,7,8,9,10,11,12], [1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
+         LostCanvas::PNG::Filter::None.new(6).apply([1,2,3,4,5,6,7,8,9,10,11,12], [1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
 
       end
 
@@ -18,7 +18,7 @@ describe LostCanvas::PNG::Filter::None do
       
       it 'should return the scanline untouched' do
       
-         LostCanvas::PNG::Filter::None.apply([1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
+         LostCanvas::PNG::Filter::None.new(6).apply([1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
 
       end
 
@@ -32,7 +32,7 @@ describe LostCanvas::PNG::Filter::None do
       
       it 'should return the scanline untouched' do
       
-         LostCanvas::PNG::Filter::None.revert([1,2,3,4,5,6,7,8,9,10,11,12], [1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
+         LostCanvas::PNG::Filter::None.new(6).revert([1,2,3,4,5,6,7,8,9,10,11,12], [1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
 
       end
 
@@ -42,7 +42,7 @@ describe LostCanvas::PNG::Filter::None do
       
       it 'should return the scanline untouched' do
       
-         LostCanvas::PNG::Filter::None.revert([1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
+         LostCanvas::PNG::Filter::None.new(6).revert([1,2,3,4,5,6,7,8,9,10,11,12]).should == [1,2,3,4,5,6,7,8,9,10,11,12]
 
       end
 

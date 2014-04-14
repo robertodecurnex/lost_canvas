@@ -10,6 +10,17 @@ module LostCanvas
     # @return [String] encoded PNG signature.
     SIGNATURE = [137, 80, 78, 71, 13, 10, 26, 10].pack('C8')
 
+    # The size of a pixel (in bytes) for every color type.
+    #
+    # @return [{Fixnum=>Fixnum}] the pixel size of every color type.
+    PIXEL_SIZE = {
+      0 => 1,
+      2 => 3,
+      3 => nil,
+      4 => 2,
+      6 => 4
+    }
+        
     module Filters
        
       NONE = 0
@@ -49,19 +60,21 @@ module LostCanvas
         width: width
       })
 
+      pixel_size = LostCanvas::PNG.pixel_size(encoding.color_type)
+
       data = chunks['IDAT'].collect do |chunk| 
-        Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+4*encoding.width).inject([]) do |memo, scanline|
+        Zlib::Inflate.inflate(chunk.data).bytes.each_slice(1+pixel_size*encoding.width).inject([]) do |memo, scanline|
           filter_type, *data = scanline
 
-          memo << LostCanvas::PNG::revert_filter(filter_type, data, memo.last)
+          memo << LostCanvas::PNG.revert_filter(filter_type, encoding.color_type, data, memo.last)
         end
       end.flatten
 
 
       data_filters = chunks['IDAT'].collect { |chunk| Zlib::Inflate.inflate(chunk.data).bytes.first }
       
-      pixels = Matrix[*data.each_slice(4).to_a.each_slice(encoding.width).to_a]
- 
+      pixels = Matrix[*data.each_slice(pixel_size).to_a.each_slice(encoding.width).to_a]
+      
       LostCanvas::Image.new(pixels, encoding)
     end
 
@@ -78,13 +91,18 @@ module LostCanvas
       return chunk
     end
     
-    def self.filter(type, data, previous=[])
-      LostCanvas::PNG::Filter.get(type).apply(data, previous)
+    def self.filter(type, color_type, data, previous=[])
+      LostCanvas::PNG::Filter.get(type, color_type).apply(data, previous)
     end
 
-    def self.revert_filter(type, data, previous=[])
-      LostCanvas::PNG::Filter.get(type).revert(data, previous)
+    def self.revert_filter(type, color_type, data, previous=[])
+      LostCanvas::PNG::Filter.get(type, color_type).revert(data, previous)
     end
+
+    def self.pixel_size(color_type)
+      PIXEL_SIZE[color_type]
+    end
+
 
   end
 
