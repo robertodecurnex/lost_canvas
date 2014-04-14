@@ -15,6 +15,17 @@ Gem::Specification.new do |specification|
   specification.license = 'MIT'
  
   specification.test_files = [
+    'spec/files/1x1_black_no_filter.png',
+    'spec/files/2x2_black_sub_up_filter.png',
+    'spec/files/2x2_black_sub_up_filter_grayscale.png',
+    'spec/lib/lost_canvas/png/filter/average_spec.rb',
+    'spec/lib/lost_canvas/png/filter/none_spec.rb',
+    'spec/lib/lost_canvas/png/filter/paeth_spec.rb',
+    'spec/lib/lost_canvas/png/filter/sub_spec-rb',
+    'spec/lib/lost_canvas/png/filter/up_spec.rb',
+    'spec/lib/lost_canvas/png/filter_spec.rb',
+    'spec/lib/lost_canvas/image_spec',
+    'spec_helper.rb'
   ]
 
   specification.files = [
@@ -25,8 +36,9 @@ Gem::Specification.new do |specification|
     'lib/lost_canvas/png/chunk.rb'
   ] + specification.test_files
   
-  specification.required_ruby_version = '>=2.1'
+  specification.required_ruby_version = '>=2'
 
+  specification.add_development_dependency 'coveralls'
   specification.add_development_dependency 'rake'
   specification.add_development_dependency 'rspec'
 end 
